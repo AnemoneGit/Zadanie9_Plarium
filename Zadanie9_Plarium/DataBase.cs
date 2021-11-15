@@ -11,23 +11,16 @@ using System.Xml.Serialization;
 namespace Zadanie9_Plarium
 {
     [Serializable]
-    class DataBase
+    class DataBase//класс базы данных
     {
-        [XmlIgnore]
-        private static SemaphoreSlim _sem = new SemaphoreSlim(1);
-        [XmlIgnore]
-        private int iPeople= 0;
-        [XmlIgnore]
-        private int iRegion = 0;
-        [XmlIgnore]
-        private int iPogoda = 0;
-        [XmlArray("CollectionPeople"), XmlArrayItem("Item")]
+        private static SemaphoreSlim _sem = new SemaphoreSlim(1);//создаем семафор для управления потоками
+        private int iPeople= 0;//
+        private int iRegion = 0;//счетчики
+        private int iPogoda = 0;//
+        //листы для передачи данных в методы из БД
         public List<People> peoples = new List<People>();
-        [XmlArray("CollectionRegion"), XmlArrayItem("Item")]
         public List<Region> regions = new List<Region>();
-        [XmlIgnore]
         public Pogoda wether = new Pogoda();
-        [XmlArray("CollectionPogoda"), XmlArrayItem("Item")]
         public List<Pogoda> pogodas = new List<Pogoda>();
 
         public DataBase()
@@ -35,7 +28,7 @@ namespace Zadanie9_Plarium
 
 
         }
-    
+        //методы для добавления данных в БД
         #region AddData
         public void AddData(People people)
         {
@@ -82,11 +75,13 @@ namespace Zadanie9_Plarium
         #endregion
 
 
-        public void GetToColection()
+        public void GetToColection()//метод для восстановления данных из БД после перезапуска программы
         {
+            //создаем потоки добавления в каждую коллекцию
            Thread thread1= new Thread(GetToPeople);
             Thread thread2 = new Thread(GetToReg);
             Thread thread3 = new Thread(GetToPogod);
+            //устанавливаем приоритеты
             thread1.Priority = ThreadPriority.Highest;
             thread2.Priority = ThreadPriority.AboveNormal;
             thread3.Priority = ThreadPriority.Lowest;
@@ -97,7 +92,7 @@ namespace Zadanie9_Plarium
 
         
    
-
+        //методы добавления в коллекции из БД
         private void GetToPeople()
         {
             Console.WriteLine("GetToPeople хочет зайти");
